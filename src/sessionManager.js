@@ -526,7 +526,9 @@ export class SessionManager {
       session.exitCode = exitCode;
       session.status = "exited";
       session.updatedAt = nowIso();
-      this.persistSessionName(session);
+      if (!this.persistSessionName(session)) {
+        this.scheduleDeferredNamePersistence(session);
+      }
       for (const client of session.clients) {
         client.send(JSON.stringify({ type: "exit", exitCode }));
       }
@@ -860,8 +862,18 @@ export class SessionManager {
   }
 
   findHistoricalMatch(session) {
+    const sessionCreatedAt = Date.parse(String(session?.createdAt || ""));
     const candidates = this.listHistoricalSessions().filter((item) => {
-      return item.provider === session.provider && item.cwd === session.cwd;
+      if (item.provider !== session.provider || item.cwd !== session.cwd) {
+        return false;
+      }
+
+      if (Number.isNaN(sessionCreatedAt)) {
+        return true;
+      }
+
+      const itemUpdatedAt = Date.parse(String(item.updatedAt || ""));
+      return Number.isNaN(itemUpdatedAt) || itemUpdatedAt >= sessionCreatedAt;
     });
     if (!candidates.length) {
       return null;
@@ -877,23 +889,53 @@ export class SessionManager {
 
   persistSessionName(session) {
     if (!session || session.autoNamed) {
-      return;
+      return false;
     }
 
     const name = String(session.name || "").trim();
     if (!name) {
-      return;
+      return false;
     }
 
     if (session.resumeSessionId) {
       this.setCustomName(session.provider, session.resumeSessionId, name);
-      return;
+      return true;
     }
 
     const historicalSession = this.findHistoricalMatch(session);
     if (historicalSession?.resumeSessionId) {
       this.setCustomName(session.provider, historicalSession.resumeSessionId, name);
+      return true;
     }
+
+    return false;
+  }
+
+  scheduleDeferredNamePersistence(session) {
+    if (!session || session.autoNamed || session.resumeSessionId) {
+      return;
+    }
+
+    const snapshot = {
+      provider: session.provider,
+      cwd: session.cwd,
+      inputPreview: session.inputPreview,
+      name: session.name,
+      createdAt: session.createdAt,
+      autoNamed: false,
+      resumeSessionId: null
+    };
+
+    let attempts = 0;
+    const tryPersist = () => {
+      attempts += 1;
+      if (this.persistSessionName(snapshot) || attempts >= 12) {
+        return;
+      }
+      setTimeout(tryPersist, 250).unref?.();
+    };
+
+    setTimeout(tryPersist, 150).unref?.();
   }
 
   buildProviderCommand(session) {

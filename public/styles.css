@@ -871,18 +871,26 @@ html.touch-input-mode.terminal-layer-mode .terminal-topbar {
   flex-direction: column;
 }
 
+.session-history-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 38px;
+  margin: 0 0 8px;
+}
+
 .session-library-head {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .session-rack-head h3,
 .session-library-head h3 {
   margin: 0;
-  font-size: 0.76rem;
+  font-size: 0.72rem;
 }
 
 .session-back-button {
@@ -896,13 +904,13 @@ html.touch-input-mode.terminal-layer-mode .terminal-topbar {
 
 .session-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(72px, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(3, minmax(58px, 1fr));
+  gap: 3px;
 }
 
 .session-stat {
-  padding: 6px 8px;
-  border-radius: 12px;
+  padding: 4px 6px;
+  border-radius: 10px;
   background: rgba(244, 239, 233, 0.88);
   border: 1px solid rgba(36, 28, 20, 0.06);
   text-align: center;
@@ -910,15 +918,17 @@ html.touch-input-mode.terminal-layer-mode .terminal-topbar {
 
 .session-stat strong {
   display: block;
-  font-size: 0.88rem;
+  font-size: 0.76rem;
+  line-height: 1.05;
   color: var(--text);
 }
 
 .session-stat span {
   display: block;
-  margin-top: 1px;
+  margin-top: 0;
   color: var(--muted);
-  font-size: 0.6rem;
+  font-size: 0.52rem;
+  line-height: 1.05;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1687,6 +1697,11 @@ html.touch-input-mode.terminal-layer-mode .mobile-composer {
   .session-library-head {
     margin-bottom: 8px;
     gap: 8px;
+  }
+
+  .session-history-toolbar {
+    min-height: 34px;
+    margin-bottom: 6px;
   }
 
   .session-rack-home .session-rack-list {

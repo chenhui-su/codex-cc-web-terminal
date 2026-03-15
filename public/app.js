@@ -36,6 +36,7 @@ const sessionsRoot = document.getElementById("sessions");
 const sessionLiveCountRoot = document.getElementById("session-live-count");
 const sessionSavedCountRoot = document.getElementById("session-saved-count");
 const sessionTotalCountRoot = document.getElementById("session-total-count");
+const sessionHistoryToolbarRoot = document.getElementById("session-history-toolbar");
 const homeStatusRoot = document.getElementById("home-status");
 const browserCurrentRoot = document.getElementById("browser-current");
 const directoryTreeRoot = document.getElementById("directory-tree");
@@ -891,6 +892,10 @@ function buildHistoryToggle(savedSessions) {
 
 function renderSessions() {
   sessionsRoot.innerHTML = "";
+  if (sessionHistoryToolbarRoot) {
+    sessionHistoryToolbarRoot.innerHTML = "";
+    sessionHistoryToolbarRoot.classList.add("hidden");
+  }
   const liveSessions = sessions.filter((session) => session.kind === "live");
   const savedSessions = sessions.filter((session) => session.kind === "history");
 
@@ -921,7 +926,12 @@ function renderSessions() {
     const provider = getProviderInfo(currentFilter);
     const filteredHistory = savedSessions.filter((session) => session.provider === currentFilter);
 
-    sessionsRoot.appendChild(buildSectionHead("History", toggle));
+    if (toggle && sessionHistoryToolbarRoot) {
+      sessionHistoryToolbarRoot.appendChild(toggle);
+      sessionHistoryToolbarRoot.classList.remove("hidden");
+    }
+
+    sessionsRoot.appendChild(buildSectionHead("History"));
     if (!filteredHistory.length) {
       sessionsRoot.appendChild(
         buildEmptyState(`No saved ${provider.label} sessions`, "Switch providers or create a new session.")
