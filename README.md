@@ -92,14 +92,15 @@ npm run service:logs
 ## Local CI/CD (Auto Sync Deploy)
 
 ```bash
-npm run cicd:once    # sync and deploy once now
+npm run cicd:once    # sync and deploy once now (no push)
 npm run cicd:start   # start PM2 auto-sync job (checks every 300s)
 npm run cicd:status  # show auto-sync job status
 npm run cicd:logs    # show auto-sync job logs
+npm run cicd:once:publish  # sync/deploy and publish to fork/local-cicd
 npm run cicd:stop    # stop auto-sync job
 ```
 
-Pipeline: on branch `local-cicd`, fetch `origin/main` and run `git rebase origin/main`, then run `npm run test:backend`, `npm run web:build`, restart `codex-cc-web-terminal`, and publish to `fork/local-cicd`.
+Pipeline: on branch `local-cicd`, fetch `origin/main` and run `git rebase origin/main`, then run `npm run test:backend`, `npm run web:build`, and restart `codex-cc-web-terminal`. Auto loop does not push by default to avoid interactive credential popups.
 
 Default proxy for Git/npm is terminal-scoped `http://127.0.0.1:10808`. If you do not need a proxy:
 
@@ -144,5 +145,7 @@ netstat -ano | findstr :5173
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
 - [SECURITY.md](./SECURITY.md)
 - [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+
+
 
 

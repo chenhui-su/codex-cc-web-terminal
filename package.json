@@ -15,7 +15,7 @@
     "test:backend:all": "node --test --test-concurrency=1 tests/*.test.js",
     "test:backend:http": "node --test --test-concurrency=1 tests/koa-app.test.js tests/ws.test.js",
     "test:backend:session": "node --test --test-concurrency=1 tests/session-manager.test.js",
-    "cicd:once": "node ./scripts/local-cicd.mjs once --work-branch local-cicd --base-remote origin --base-branch main --publish-remote fork --publish-branch local-cicd --proxy http://127.0.0.1:10808",
+    "cicd:once": "node ./scripts/local-cicd.mjs once --work-branch local-cicd --base-remote origin --base-branch main --publish-remote off --proxy http://127.0.0.1:10808",
     "cicd:start": "pm2 startOrReload ecosystem.config.cjs --only codex-cc-web-terminal-cicd --update-env",
     "cicd:stop": "pm2 delete codex-cc-web-terminal-cicd",
     "cicd:status": "pm2 status codex-cc-web-terminal-cicd",
@@ -46,7 +46,8 @@
     "launchd:uninstall": "node ./scripts/launchd/manage.mjs uninstall",
     "launchd:list": "node ./scripts/launchd/manage.mjs list",
     "dev": "npm run dev:hot",
-    "prod": "npm run service:start"
+    "prod": "npm run service:start",
+    "cicd:once:publish": "node ./scripts/local-cicd.mjs once --work-branch local-cicd --base-remote origin --base-branch main --publish-remote fork --publish-branch local-cicd --proxy http://127.0.0.1:10808"
   },
   "engines": {
     "node": ">=22"

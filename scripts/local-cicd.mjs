@@ -35,6 +35,7 @@ function run(command, args, { env, capture = false, allowFailure = false } = {})
     cwd: root,
     env,
     encoding: "utf8",
+    windowsHide: true,
     stdio: capture ? ["ignore", "pipe", "pipe"] : "inherit"
   });
 
@@ -72,7 +73,7 @@ function parseArgs(argv) {
     workBranch: process.env.LOCAL_CICD_WORK_BRANCH || "local-cicd",
     baseRemote: process.env.LOCAL_CICD_BASE_REMOTE || "origin",
     baseBranch: process.env.LOCAL_CICD_BASE_BRANCH || "main",
-    publishRemote: process.env.LOCAL_CICD_PUBLISH_REMOTE || "fork",
+    publishRemote: process.env.LOCAL_CICD_PUBLISH_REMOTE || "",
     publishBranch: process.env.LOCAL_CICD_PUBLISH_BRANCH || "local-cicd",
     intervalSeconds: 300,
     proxy: process.env.LOCAL_CICD_PROXY || "http://127.0.0.1:10808",
@@ -196,6 +197,10 @@ function buildEnv(options) {
     env.http_proxy = options.proxy;
     env.https_proxy = options.proxy;
   }
+  env.GIT_TERMINAL_PROMPT = "0";
+  env.GCM_INTERACTIVE = "never";
+  env.GIT_ASKPASS = "";
+  env.SSH_ASKPASS = "";
   return env;
 }
 
@@ -252,7 +257,11 @@ async function waitForHealth(port, timeoutSeconds = 30) {
 }
 
 function fetchRemote(env, remote, branch) {
-  run("git", ["-c", "http.sslBackend=openssl", "fetch", remote, branch, "--prune"], { env });
+  run(
+    "git",
+    ["-c", "http.sslBackend=openssl", "-c", "credential.interactive=never", "fetch", remote, branch, "--prune"],
+    { env }
+  );
 }
 
 function pushToFork(env, options) {
@@ -266,6 +275,8 @@ function pushToFork(env, options) {
     [
       "-c",
       "http.sslBackend=openssl",
+      "-c",
+      "credential.interactive=never",
       "push",
       options.publishRemote,
       `HEAD:${options.publishBranch}`,
@@ -300,7 +311,16 @@ async function deployCycle(options) {
     log(`[git] fetch ${options.publishRemote}/${options.publishBranch}`);
     const publishFetch = run(
       "git",
-      ["-c", "http.sslBackend=openssl", "fetch", options.publishRemote, options.publishBranch, "--prune"],
+      [
+        "-c",
+        "http.sslBackend=openssl",
+        "-c",
+        "credential.interactive=never",
+        "fetch",
+        options.publishRemote,
+        options.publishBranch,
+        "--prune"
+      ],
       { env, allowFailure: true, capture: true }
     );
     if (publishFetch.status !== 0) {
@@ -396,4 +416,6 @@ main().catch((error) => {
   log(`[fatal] ${error?.stack || error?.message || String(error)}`);
   process.exit(1);
 });
+
+
 
