@@ -88,6 +88,26 @@ npm run service:status
 npm run service:logs
 ```
 
+## 本地 CI/CD（自动同步部署）
+
+```bash
+npm run cicd:once    # 立即同步一次并部署
+npm run cicd:start   # 启动 PM2 后台自动同步（每 300 秒检查一次）
+npm run cicd:status  # 查看自动同步任务状态
+npm run cicd:logs    # 查看自动同步任务日志
+npm run cicd:stop    # 停止自动同步任务
+```
+
+自动流程：在 `local-cicd` 分支抓取 `origin/main` 并 `git rebase origin/main`，随后执行 `npm run test:backend`、`npm run web:build`、重启 `codex-cc-web-terminal`，最后推送到 `fork/local-cicd`。
+
+默认使用终端级代理 `http://127.0.0.1:10808`；如果你不需要代理，可在启动时改为：
+
+```bash
+node ./scripts/local-cicd.mjs loop --proxy off
+```
+
+注意：自动同步要求当前分支是 `local-cicd` 且没有已跟踪文件改动（未跟踪文件会忽略）。
+
 ## 最常用命令
 
 ```bash
@@ -123,3 +143,5 @@ netstat -ano | findstr :5173
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
 - [SECURITY.md](./SECURITY.md)
 - [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+
+

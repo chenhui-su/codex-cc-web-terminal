@@ -89,6 +89,26 @@ npm run service:status
 npm run service:logs
 ```
 
+## Local CI/CD (Auto Sync Deploy)
+
+```bash
+npm run cicd:once    # sync and deploy once now
+npm run cicd:start   # start PM2 auto-sync job (checks every 300s)
+npm run cicd:status  # show auto-sync job status
+npm run cicd:logs    # show auto-sync job logs
+npm run cicd:stop    # stop auto-sync job
+```
+
+Pipeline: on branch `local-cicd`, fetch `origin/main` and run `git rebase origin/main`, then run `npm run test:backend`, `npm run web:build`, restart `codex-cc-web-terminal`, and publish to `fork/local-cicd`.
+
+Default proxy for Git/npm is terminal-scoped `http://127.0.0.1:10808`. If you do not need a proxy:
+
+```bash
+node ./scripts/local-cicd.mjs loop --proxy off
+```
+
+Note: auto-sync requires current branch `local-cicd` with no tracked file changes (untracked files are ignored).
+
 ## Common Commands
 
 ```bash
@@ -124,3 +144,5 @@ netstat -ano | findstr :5173
 - [CONTRIBUTING.md](./CONTRIBUTING.md)
 - [SECURITY.md](./SECURITY.md)
 - [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+
+

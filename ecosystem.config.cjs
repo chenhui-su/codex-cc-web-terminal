@@ -32,6 +32,36 @@ module.exports = {
     },
     {
       ...shared,
+      name: "codex-cc-web-terminal-cicd",
+      script: path.join(root, "scripts", "local-cicd.mjs"),
+      args: [
+        "loop",
+        "--work-branch",
+        "local-cicd",
+        "--base-remote",
+        "origin",
+        "--base-branch",
+        "main",
+        "--publish-remote",
+        "fork",
+        "--publish-branch",
+        "local-cicd",
+        "--interval-seconds",
+        "300",
+        "--proxy",
+        "http://127.0.0.1:10808",
+        "--health-port",
+        "3210"
+      ],
+      watch: false,
+      out_file: path.join(logsDir, "pm2-cicd-out.log"),
+      error_file: path.join(logsDir, "pm2-cicd-error.log"),
+      env: {
+        NODE_ENV: "production"
+      }
+    },
+    {
+      ...shared,
       name: "codex-cc-web-terminal-dev",
       watch: [path.join(root, "src"), path.join(root, "web"), path.join(root, ".env")],
       ignore_watch: [
