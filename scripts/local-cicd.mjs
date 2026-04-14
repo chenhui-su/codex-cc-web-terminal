@@ -298,11 +298,15 @@ async function deployCycle(options) {
 
   if (options.publishRemote) {
     log(`[git] fetch ${options.publishRemote}/${options.publishBranch}`);
-    run(
+    const publishFetch = run(
       "git",
       ["-c", "http.sslBackend=openssl", "fetch", options.publishRemote, options.publishBranch, "--prune"],
-      { env, allowFailure: true }
+      { env, allowFailure: true, capture: true }
     );
+    if (publishFetch.status !== 0) {
+      const message = (publishFetch.stderr || publishFetch.stdout || "unknown error").trim();
+      log(`[warn] fetch ${options.publishRemote}/${options.publishBranch} failed: ${message}`);
+    }
   }
 
   const oldHead = captureTrim("git", ["rev-parse", "HEAD"], env);
@@ -392,3 +396,4 @@ main().catch((error) => {
   log(`[fatal] ${error?.stack || error?.message || String(error)}`);
   process.exit(1);
 });
+
