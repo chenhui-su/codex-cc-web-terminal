@@ -45,7 +45,7 @@ module.exports = {
         "--publish-remote",
         "off",
         "--interval-seconds",
-        "300",
+        "14400",
         "--proxy",
         "http://127.0.0.1:10808",
         "--health-port",
